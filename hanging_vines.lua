@@ -13,7 +13,7 @@ local cids = {
 	vine = minetest.get_content_id("ethereal:vine"),
 }
 
-abdecor.register_advanced_decoration("vine",{
+abdecor.register_advanced_decoration("abdecor_vines",{
 	place_on = {
 		"default:stone",
 		"default:dirt",

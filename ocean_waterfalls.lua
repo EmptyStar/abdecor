@@ -20,7 +20,7 @@ for _,node in ipairs(wall_stones) do
 	valid_wall_stones[minetest.get_content_id(node)] = true
 end
 
-abdecor.register_advanced_decoration("waterfall",{
+abdecor.register_advanced_decoration("abdecor_waterfalls",{
 	place_on = "default:water_source",
 	spawn_by = wall_stones,
 	num_spawn_by = 3,
