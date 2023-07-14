@@ -10,10 +10,12 @@ Create advanced, complex biome decorations with the Advanced Biome Decoration AP
 In order to facilitate more complex decorations, the Advanced Biome Decoration API uses a powerful and performant mechanism for targeting advanced decorations to the environment. The advanced decoration process works like so:
 
 1. Call `abdecor.register_advanced_decoration(...)` to register an advanced decoration
-2. Self-destructing 'mapgen nodes' are placed to mark locations where advanced decorations should be generated
-3. The biome API gennotify mechanism is used to identify the mapgen nodes during map generation
-4. An advanced decoration function (supplied during registration) is called for each mapgen node to generate the advanced decoration
+2. Self-destructing 'marker nodes' are placed to mark locations where advanced decorations should be generated
+3. The biome API gennotify mechanism is used to identify the marker nodes during map generation
+4. An advanced decoration function (supplied during registration) is called for each marker node to generate the advanced decoration at each marker location
 5. All advanced decorations are written to the map and rendered in the world
+
+For working examples of what this API can do, see the [Advanced Biome Decoration Modpack](https://github.com/EmptyStar/abdecor_modpack) for reference.
 
 API
 ---
@@ -38,11 +40,11 @@ The following decoration definition fields are set/overridden by this API and th
 
 - `deco_type = "simple"`
 - `name = <internal value>`
-- `decoration = <internal mapgen node value>`
+- `decoration = <internal marker node value>`
 
 #### `fn`
 
-This is a function that is called for each mapgen node that is placed in the environment for your advanced decoration. It is responsible for actually checking the surrounding nodes and placing nodes according to how they should be placed in the current mapchunk. It is effectively the implementation of your advanced decoration.
+This is a function that is called for each marker node that is placed in the environment for your advanced decoration. It is responsible for actually checking the surrounding nodes and placing nodes according to how they should be placed in the current mapchunk. It is effectively the implementation of your advanced decoration.
 
 This function gets called for each advanced decoration that can be placed and gets passed a table with the following keys defined for each call:
 
@@ -57,6 +59,7 @@ This function gets called for each advanced decoration that can be placed and ge
   - `replacements`: Which nodes to replace with other nodes in the schematic. Optional value that defaults to `{}`
   - `force_placement`: Boolean flag that determines whether to force placement of the schematic if it would otherwise collide with nodes that are already placed. Optional value that defaults to `false`.
   - `flags`: A comma-delimited string containing any of `place_center_x`, `place_center_y`, and `place_center_z`. Optional value that defaults to `""`
+- `calc_lighting`: This key is a function that passes through its exact parameters to [`VoxelManip.calc_lighting`](https://github.com/minetest/minetest/blob/cf5add14728f6f00eec0cc8221050ba91e6a9646/doc/lua_api.txt#L4479)
 - `index2d`: This key is a function that indexes a two-dimensional flat array for the current mapchunk such as the array returned from `minetest.get_mapgen_object("heatmap")` and other such functions. This function takes either two integer arguments that represent x/z coordinates, or a single table argument in the form of `{ x = <int>, z = <int> }` (`y` value is optional/unused).
 - `minp`: This is the `minp` value for the current [`minetest.register_on_generated(...)`](https://github.com/minetest/minetest/blob/cf5add14728f6f00eec0cc8221050ba91e6a9646/doc/lua_api.txt#L5185) call.
 - `maxp`: This is the `maxp` value for the current [`minetest.register_on_generated(...)`](https://github.com/minetest/minetest/blob/cf5add14728f6f00eec0cc8221050ba91e6a9646/doc/lua_api.txt#L5185) call.
@@ -87,14 +90,3 @@ For clarity, the default flags table looks like this:
   schematic = false, -- decoration does not place schematics
 }
 ```
-
-Examples
---------
-
-This API comes with three example decorations that demonstrate a few things that the API can do:
-
-- [Ocean waterfalls](https://github.com/EmptyStar/abdecor/tree/main/ocean_waterfalls.lua) -- Generates water in the sides of cliffs that overlook oceans. Depends on [Minetest Game](https://content.minetest.net/packages/Minetest/minetest_game/).
-- [Hanging vines](https://github.com/EmptyStar/abdecor/tree/main/hanging_vines.lua) --  Generates hanging vines on the undersides of cliffs in humid/swampy biomes. Depends on [Ethereal](https://content.minetest.net/packages/TenPlus1/ethereal/).
-- [Boulders](https://github.com/EmptyStar/abdecor/tree/main/boulders.lua) -- Generates boulders on flat terrain on certain surface nodes. Depends on [Minetest Game](https://content.minetest.net/packages/Minetest/minetest_game/).
-
-These examples are disabled by default. They can be enabled via settings under Settings > All Settings > Content: Mods > Advanced Biome Decoration API.
